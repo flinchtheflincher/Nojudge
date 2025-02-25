@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+    <h1>Chat with Nojudge Bot</h1>
+    <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; height: 300px; width: 200px; overflow-y: scroll;">
+    <div>
+    <form id="chat-form">
+        <input type="text" id="message" name= "message" placeholder="Type your message here..." required>
+        <button type="submit">Send</button>
+    </form>
+    <script scr ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#chat-form").on("submit", function(e){
+            e.preventDefault();
+            var message = $("#message").val();
+            $("#chat-box").append("<div><strong>Bot:</strong>" + message + "</div>");
+            $.post("/chat", {message: message}, function(data){
+                $("#chat-box").append("<div><strong>Bot:</strong>" + data.response + "</div>");
+            });
+            $("#message").val("");
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    color: #000000;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.done-button {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.search-container {
+    margin-bottom: 24px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #000000;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.search-input::placeholder {
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+
+.entry-card {
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    min-height: 80px;
+}
+
+/* Split view styles */
+.split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    min-height: 100vh;
+}
+
+.left-panel {
+    border-right: 1px solid #e5e5e5;
+    padding-right: 20px;
+    overflow-y: auto;
+}
+
+.right-panel {
+    background-color: #f5f5f5;
+    padding-left: 20px;
+}
+
+/* Profile button */
+.profile-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .split-view {
+        grid-template-columns: 1fr;
+    }
+    
+    .left-panel {
+        border-right: none;
+        padding-right: 0;
+    }
+    
+    .right-panel {
+        display: none;
+    }
+}
+
+/* Scrollbar customization */
+.left-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.left-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.left-panel::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Focus states */
+.search-input:focus,
+.done-button:focus,
+.profile-button:focus {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+}
+
+/* Hover states */
+.done-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.entry-card:hover {
+    background-color: #e5e5e5;
+}
