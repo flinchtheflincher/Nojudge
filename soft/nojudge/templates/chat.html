@@ -3,23 +3,75 @@
 {% block title %}Chat{% endblock %}
 
 {% block content %}
-    <h1>Chat with Nojudge Bot</h1>
-    <div id="chat-box" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; height: 300px; width: 200px; overflow-y: scroll;">
-    <div>
+<div class="chat-container">
+    <div class="chat-header">
+        <a href="/" class="back-button">←</a>
+        <span class="chat-title">Sage</span>
+    </div>
+    <div id="chat-box"></div>
     <form id="chat-form">
-        <input type="text" id="message" name= "message" placeholder="Type your message here..." required>
-        <button type="submit">Send</button>
+        <div class="input-container">
+            <input type="text" id="message" name="message" placeholder="Message..." required>
+            <button type="button" id="voice-button">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+            </button>
+        </div>
     </form>
-    <script scr ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $("#chat-form").on("submit", function(e){
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const chatBox = $("#chat-box");
+        const messageInput = $("#message");
+        const voiceButton = $("#voice-button");
+        
+        function scrollToBottom() {
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+        }
+        
+        function addMessage(message, isUser) {
+            const messageClass = isUser ? 'user-message' : 'bot-message';
+            chatBox.append(`
+                <div class="message ${messageClass}">
+                    <div class="message-content">${message}</div>
+                </div>
+            `);
+            scrollToBottom();
+        }
+
+        $("#chat-form").on("submit", function(e) {
             e.preventDefault();
-            var message = $("#message").val();
-            $("#chat-box").append("<div><strong>Bot:</strong>" + message + "</div>");
-            $.post("/chat", {message: message}, function(data){
-                $("#chat-box").append("<div><strong>Bot:</strong>" + data.response + "</div>");
+            const message = messageInput.val().trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            messageInput.val("");
+            
+            $.ajax({
+                url: "/chat",
+                method: "POST",
+                data: {message: message},
+                success: function(data) {
+                    addMessage(data.response, false);
+                },
+                error: function() {
+                    addMessage("Sorry, something went wrong. Please try again.", false);
+                },
+                complete: function() {
+                    scrollToBottom();
+                }
             });
-            $("#message").val("");
         });
-    </script>
+
+        voiceButton.on("click", function() {
+            // Voice input functionality can be implemented here
+            alert("Voice input feature coming soon!");
+        });
+    });
+</script>
 {% endblock %}
