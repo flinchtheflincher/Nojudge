@@ -1,0 +1,32 @@
+{
+  "name": "nojudge-chat-app",
+  "version": "1.0.0",
+  "description": "A compassionate chat application with AI-powered conversation partner",
+  "main": "soft/nojudge/static/index.js",
+  "scripts": {
+    "start": "cd soft/nojudge && python app.py",
+    "dev": "cd soft/nojudge && python app.py",
+    "build": "echo 'No build process needed for this Flask app'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "chat",
+    "ai",
+    "flask",
+    "javascript",
+    "mental-health",
+    "conversation"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
