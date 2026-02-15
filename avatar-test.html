@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Test - Nojudge</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #000;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .companion-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .companion-figure {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .companion-head {
+            width: 180px;
+            height: 220px;
+            background: radial-gradient(ellipse at 30% 30%, #2d2d2d 0%, #000000 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            z-index: 2;
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset -10px -10px 30px rgba(0, 0, 0, 0.3),
+                inset 10px 10px 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .companion-body {
+            width: 280px;
+            height: 420px;
+            background: radial-gradient(ellipse at 30% 20%, #2d2d2d 0%, #000000 100%);
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            position: relative;
+            margin-top: -40px;
+            z-index: 1;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.25),
+                inset -15px -15px 40px rgba(0, 0, 0, 0.3),
+                inset 15px 15px 40px rgba(255, 255, 255, 0.05);
+        }
+
+        .companion-status {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .companion-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .companion-activity {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 999px;
+            display: inline-block;
+        }
+
+        .camera-button {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #d1d5db;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .camera-button:hover {
+            background: #9ca3af;
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .camera-button:active {
+            transform: scale(0.95);
+        }
+
+        .camera-icon {
+            width: 28px;
+            height: 28px;
+            color: #fff;
+        }
+
+        .info {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            color: #6b7280;
+            font-size: 0.875rem;
+            max-width: 300px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .activity-idle {
+            animation: pulse 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Nojudge</h1>
+    </div>
+
+    <div class="companion-container">
+        <div class="companion-figure" id="companionFigure">
+            <div class="companion-head" id="head"></div>
+            <div class="companion-body" id="body"></div>
+        </div>
+
+        <div class="companion-status">
+            <div class="companion-name">Buddy</div>
+            <div class="companion-activity activity-idle">Idle</div>
+        </div>
+    </div>
+
+    <button class="camera-button" onclick="alert('Camera button clicked! In the full app, this opens the chat.')">
+        <svg class="camera-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+    </button>
+
+    <div class="info">
+        <strong>Avatar Test Page</strong><br>
+        • Breathing animation active<br>
+        • Mouse parallax enabled<br>
+        • Click camera button to test
+    </div>
+
+    <script>
+        const head = document.getElementById('head');
+        const body = document.getElementById('body');
+        const figure = document.getElementById('companionFigure');
+
+        // Breathing animation
+        gsap.to(head, {
+            scale: 1.05,
+            duration: 2,
+            yoyo: true,
+            repeat: -1,
+            ease: 'sine.inOut',
+        });
+
+        gsap.to(body, {
+            scale: 1.03,
+            duration: 2.5,
+            yoyo: true,
+            repeat: -1,
+            ease: 'sine.inOut',
+        });
+
+        // Mouse parallax effect
+        window.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const { innerWidth, innerHeight } = window;
+
+            const xPercent = (clientX / innerWidth - 0.5) * 2;
+            const yPercent = (clientY / innerHeight - 0.5) * 2;
+
+            gsap.to(figure, {
+                x: xPercent * 20,
+                y: yPercent * 20,
+                rotationY: xPercent * 5,
+                rotationX: -yPercent * 5,
+                duration: 0.5,
+                ease: 'power2.out',
+            });
+        });
+
+        // Click animation
+        figure.addEventListener('click', () => {
+            gsap.to(figure, {
+                scale: 0.95,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1,
+            });
+        });
+
+        console.log('✅ Avatar test page loaded successfully!');
+        console.log('✅ GSAP animations initialized');
+        console.log('✅ Mouse parallax active');
+    </script>
+</body>
+
+</html>

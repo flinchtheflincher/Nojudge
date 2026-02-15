@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #1a1a24 0%, #0a0a0f 100%);
+    background: #ffffff;
 }
 
 .companion-figure-wrapper {
@@ -124,21 +124,18 @@
 .companion-name {
     font-size: 2rem;
     font-weight: 700;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #000;
     margin-bottom: var(--spacing-sm);
     letter-spacing: 2px;
 }
 
 .companion-activity {
     font-size: 0.875rem;
-    color: var(--color-text-secondary);
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 1px;
     padding: var(--spacing-xs) var(--spacing-md);
-    background: rgba(99, 102, 241, 0.1);
+    background: #f3f4f6;
     border-radius: var(--radius-full);
     display: inline-block;
 }
@@ -163,7 +160,7 @@
 
 .stat-label {
     font-size: 0.75rem;
-    color: var(--color-text-muted);
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -171,7 +168,7 @@
 .stat-progress {
     width: 100px;
     height: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #e5e7eb;
     border-radius: var(--radius-full);
     overflow: hidden;
     position: relative;

@@ -2,79 +2,123 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--color-bg);
+    background: #ffffff;
+    position: relative;
 }
 
 .home-header {
-    background: var(--gradient-surface);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: var(--spacing-md) var(--spacing-xl);
-    position: sticky;
+    position: absolute;
     top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-lg) var(--spacing-xl);
     z-index: 100;
-    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .header-content {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .header-content h2 {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.5rem;
-    letter-spacing: 1px;
+    color: #000;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .home-content {
     flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: var(--spacing-xl);
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--spacing-xl);
-    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
 }
 
 .companion-section {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 600px;
+    width: 100%;
+    max-width: 500px;
 }
 
-.chat-section {
+/* Camera button */
+.camera-button {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #d1d5db;
+    border: none;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 50;
 }
 
-.chat-wrapper {
-    background: var(--gradient-surface);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.camera-button:hover {
+    background: #9ca3af;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.camera-button:active {
+    transform: scale(0.95);
+}
+
+.camera-icon {
+    width: 28px;
+    height: 28px;
+    color: #fff;
+}
+
+/* Chat overlay (hidden by default, can be toggled) */
+.chat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
     display: flex;
-    flex-direction: column;
-    height: 700px;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
 }
 
-.chat-title {
-    font-size: 1.25rem;
-    margin-bottom: var(--spacing-xs);
+.chat-overlay.active {
+    opacity: 1;
+    pointer-events: all;
 }
 
-.chat-subtitle {
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--spacing-lg);
-    text-transform: capitalize;
+.chat-modal {
+    width: 90%;
+    max-width: 500px;
+    height: 600px;
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    transition: transform var(--transition-base);
+}
+
+.chat-overlay.active .chat-modal {
+    transform: scale(1);
 }
 
 .home-loading,
@@ -87,6 +131,7 @@
     gap: var(--spacing-lg);
     padding: var(--spacing-xl);
     text-align: center;
+    background: #ffffff;
 }
 
 .home-error h2 {
@@ -94,32 +139,24 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .home-content {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-
-    .companion-section {
-        min-height: 500px;
-    }
-
-    .chat-wrapper {
-        height: 500px;
-    }
-}
-
 @media (max-width: 768px) {
-    .home-content {
+    .home-header {
         padding: var(--spacing-md);
     }
 
-    .companion-section {
-        min-height: 400px;
+    .header-content h2 {
+        font-size: 1rem;
     }
 
-    .chat-wrapper {
-        height: 400px;
-        padding: var(--spacing-md);
+    .camera-button {
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .camera-icon {
+        width: 24px;
+        height: 24px;
     }
 }
