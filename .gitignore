@@ -1,3 +1,11 @@
 # modules
 node_modules/
-soft/venv/
+.venv/
+
+# folders
+web/*
+soft/*
+
+# internal readme files
+README_CHANGES.md
+README_FILES.md
