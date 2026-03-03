@@ -9,3 +9,48 @@ soft/*
 # internal readme files
 README_CHANGES.md
 README_FILES.md
+
+# Application Data & Databases
+data/
+pdr.db
+*.db
+*.sqlite3
+
+# Vector Search Store
+vector_store/
+
+# Python Virtual Environments
+venv/
+env/
+.env/
+.venv/
+.tmp_venv/
+
+# Python Caching & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# Node Modules & Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables
+.env
+.env.local
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+
+# AI Companion Logs / Temp
+.gemini/
+tmp/

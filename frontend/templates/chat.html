@@ -1,80 +1,349 @@
 {% extends "base.html" %}
 
-{% block title %}Chat{% endblock %}
+{% block title %}Sage — Nojudge{% endblock %}
 
 {% block content %}
-<div class="chat-container">
-    <div class="chat-header">
-        <a href="/" class="back-button">←</a>
-        <span class="chat-title">Sage</span>
+<div class="sage-page" id="sagePage" data-state="idle">
+
+    <!-- Ambient Background Glow -->
+    <div class="ambient-bg"></div>
+
+    <!-- Brand Label -->
+    <div class="sage-label">
+        <h1>Sage</h1>
     </div>
-    <div id="chat-box"></div>
-    <form id="chat-form">
-        <div class="input-container">
-            <input type="text" id="message" name="message" placeholder="Message..." required>
-            <button type="button" id="voice-button">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="currentColor"
-                        d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path fill="currentColor"
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+
+    <!-- Status Text -->
+    <div class="orb-status">
+        <span id="statusText">starting...</span>
+    </div>
+
+    <!-- The Orb -->
+    <div class="orb-container" id="orbContainer">
+        <div class="orb-ring"></div>
+        <div class="orb-ring"></div>
+        <div class="orb" id="orb"></div>
+    </div>
+
+    <!-- Sage's Response -->
+    <div class="response-area">
+        <p class="response-text" id="responseText"></p>
+    </div>
+
+    <!-- Transcript -->
+    <div class="transcript-area" id="transcriptArea"></div>
+
+    <!-- Fallback Text Input -->
+    <div class="input-area">
+        <form class="input-wrapper" id="textForm">
+            <input type="text" id="textInput" placeholder="or type something..." autocomplete="off" />
+            <button type="submit" class="send-btn" aria-label="Send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
             </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        const chatBox = $("#chat-box");
-        const messageInput = $("#message");
-        const voiceButton = $("#voice-button");
+    (function () {
+        // ─── DOM Elements ───
+        const page = document.getElementById('sagePage');
+        const orb = document.getElementById('orbContainer');
+        const statusText = document.getElementById('statusText');
+        const responseEl = document.getElementById('responseText');
+        const transcript = document.getElementById('transcriptArea');
+        const textForm = document.getElementById('textForm');
+        const textInput = document.getElementById('textInput');
 
-        function scrollToBottom() {
-            chatBox.scrollTop(chatBox[0].scrollHeight);
+        // ─── State ───
+        let currentState = 'idle';
+        let isProcessing = false;
+        let recognition = null;
+        let synthesis = window.speechSynthesis;
+        let micMuted = false;
+
+        // ─── State Machine ───
+        function setState(state, statusMsg) {
+            currentState = state;
+            page.setAttribute('data-state', state);
+            statusText.textContent = statusMsg || state;
         }
 
-        function addMessage(message, isUser) {
-            const messageClass = isUser ? 'user-message' : 'bot-message';
-            chatBox.append(`
-                <div class="message ${messageClass}">
-                    <div class="message-content">${message}</div>
-                </div>
-            `);
-            scrollToBottom();
+        // ─── Auto-start listening ───
+        function startListening() {
+            if (!recognition || isProcessing || micMuted) return;
+            finalTranscript = '';
+            setState('listening', 'listening...');
+            try {
+                recognition.start();
+            } catch (e) {
+                // Already running — that's fine
+            }
         }
 
-        $("#chat-form").on("submit", function (e) {
-            e.preventDefault();
-            const message = messageInput.val().trim();
+        // ─── Speech Recognition Setup ───
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let silenceTimer = null;
+        let finalTranscript = '';
 
-            if (!message) return;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            recognition.maxAlternatives = 1;
 
-            addMessage(message, true);
-            messageInput.val("");
+            recognition.onresult = function (event) {
+                let interim = '';
+                finalTranscript = '';
 
-            $.ajax({
-                url: "/chat",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ message: message }),
-                success: function (data) {
-                    addMessage(data.response, false);
-                },
-                error: function () {
-                    addMessage("Sorry, something went wrong. Please try again.", false);
-                },
-                complete: function () {
-                    scrollToBottom();
+                for (let i = 0; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    if (result.isFinal) {
+                        finalTranscript += result[0].transcript;
+                    } else {
+                        interim += result[0].transcript;
+                    }
                 }
-            });
+
+                // Show what's being heard in real-time
+                const displayText = finalTranscript || interim;
+                if (displayText) {
+                    responseEl.textContent = displayText;
+                    responseEl.classList.add('visible');
+                }
+
+                // Reset silence timer — user is still talking
+                clearTimeout(silenceTimer);
+                silenceTimer = setTimeout(function () {
+                    // User stopped talking for 2 seconds — submit
+                    if (recognition && currentState === 'listening') {
+                        recognition.stop();
+                    }
+                }, 2000);
+            };
+
+            recognition.onerror = function (e) {
+                console.log('Speech error:', e.error);
+                clearTimeout(silenceTimer);
+                if (e.error === 'no-speech') {
+                    setState('idle', 'didn\'t catch that — try again');
+                } else if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+                    setState('idle', 'mic access needed — check browser settings');
+                } else {
+                    setState('idle', 'tap to talk');
+                }
+                isProcessing = false;
+            };
+
+            recognition.onend = function () {
+                clearTimeout(silenceTimer);
+                if (currentState === 'listening') {
+                    const text = finalTranscript.trim();
+                    if (text) {
+                        sendMessage(text);
+                    } else {
+                        // No speech captured — restart listening
+                        finalTranscript = '';
+                        setTimeout(startListening, 300);
+                    }
+                    finalTranscript = '';
+                }
+            };
+        }
+
+        // ─── Orb Click → Mute / Unmute Mic ───
+        orb.addEventListener('click', function () {
+            createRipple();
+
+            // If Sage is speaking, stop her
+            if (currentState === 'speaking') {
+                synthesis.cancel();
+                return;
+            }
+
+            // Toggle mic mute
+            if (currentState === 'listening' && recognition) {
+                micMuted = true;
+                clearTimeout(silenceTimer);
+                try { recognition.stop(); } catch (e) { }
+                setState('idle', 'mic paused — tap to resume');
+                isProcessing = false;
+                return;
+            }
+
+            // Resume listening
+            micMuted = false;
+            isProcessing = false;
+            startListening();
         });
 
-        voiceButton.on("click", function () {
-            // Voice input functionality can be implemented here
-            alert("Voice input feature coming soon!");
+        function createRipple() {
+            const ripple = document.createElement('div');
+            ripple.classList.add('ripple');
+            ripple.style.width = ripple.style.height = '150px';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.marginLeft = '-75px';
+            ripple.style.marginTop = '-75px';
+            orb.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // ─── Text Input Fallback ───
+        textForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const msg = textInput.value.trim();
+            if (!msg || isProcessing) return;
+            textInput.value = '';
+            sendMessage(msg);
         });
-    });
+
+        // ─── Send Message to Backend ───
+        async function sendMessage(message) {
+            isProcessing = true;
+            setState('thinking', 'thinking...');
+
+            // Hide previous response
+            responseEl.classList.remove('visible');
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!res.ok) throw new Error('Server error');
+
+                const data = await res.json();
+                const reply = data.response || "hmm, my mind went blank for a sec";
+
+                // Show response
+                setState('speaking', 'speaking...');
+                responseEl.textContent = reply;
+                responseEl.classList.add('visible');
+
+                // Add to transcript
+                addTranscript(message, reply);
+
+                // Speak the response
+                speakResponse(reply);
+
+            } catch (err) {
+                console.error('Chat error:', err);
+                setState('idle', 'something went wrong — try again');
+                responseEl.textContent = "couldn't reach my brain rn 😅 try again?";
+                responseEl.classList.add('visible');
+                isProcessing = false;
+            }
+        }
+
+        // ─── Text-to-Speech ───
+        let bestVoice = null;
+
+        function pickBestVoice() {
+            const voices = synthesis.getVoices();
+            if (!voices.length) return;
+
+            // Ranked preference: enhanced/premium macOS voices first, then standard
+            const ranked = [
+                'Samantha (Enhanced)', 'Zoe (Enhanced)', 'Allison (Enhanced)',
+                'Ava (Enhanced)', 'Susan (Enhanced)',
+                'Samantha', 'Zoe', 'Allison', 'Ava',
+                'Karen', 'Moira', 'Fiona',
+                'Google UK English Female', 'Google US English',
+                'Microsoft Zira',
+            ];
+
+            for (const name of ranked) {
+                const match = voices.find(v => v.name === name);
+                if (match) { bestVoice = match; return; }
+            }
+
+            // Fallback: any English female voice
+            bestVoice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'))
+                || voices.find(v => v.lang.startsWith('en'))
+                || null;
+        }
+
+        function speakResponse(text) {
+            // Clean up text for speech (remove emojis)
+            const cleanText = text.replace(/[\u{1F600}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
+
+            if (!synthesis || !cleanText.trim()) {
+                finishSpeaking();
+                return;
+            }
+
+            if (!bestVoice) pickBestVoice();
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 0.92;   // Slightly slower = more natural
+            utterance.pitch = 0.95;  // Slightly lower = warmer tone
+            utterance.volume = 1.0;
+
+            if (bestVoice) utterance.voice = bestVoice;
+
+            utterance.onend = finishSpeaking;
+            utterance.onerror = finishSpeaking;
+
+            synthesis.speak(utterance);
+        }
+
+        function finishSpeaking() {
+            isProcessing = false;
+            // Auto-restart listening after Sage finishes speaking
+            if (!micMuted) {
+                setTimeout(startListening, 500);
+            } else {
+                setState('idle', 'mic paused — tap to resume');
+            }
+        }
+
+        // ─── Transcript ───
+        function addTranscript(userMsg, sageMsg) {
+            const entry = document.createElement('div');
+            entry.classList.add('transcript-entry');
+
+            const sageLine = sageMsg.length > 100 ? sageMsg.substring(0, 100) + '...' : sageMsg;
+
+            entry.innerHTML =
+                '<span class="user-line">you: ' + escapeHtml(userMsg) + '</span>' +
+                '<span class="sage-line">sage: ' + escapeHtml(sageLine) + '</span>';
+
+            transcript.appendChild(entry);
+            transcript.scrollTop = transcript.scrollHeight;
+
+            // Keep only last 5 entries
+            while (transcript.children.length > 5) {
+                transcript.removeChild(transcript.firstChild);
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ─── Load voices and auto-start ───
+        if (synthesis) {
+            synthesis.getVoices();
+            synthesis.onvoiceschanged = function () {
+                pickBestVoice();
+            };
+            // Pick voice after short delay (voices load async)
+            setTimeout(pickBestVoice, 500);
+        }
+
+        // ─── Auto-start listening on page load ───
+        setTimeout(startListening, 1000);
+
+    })();
 </script>
 {% endblock %}
